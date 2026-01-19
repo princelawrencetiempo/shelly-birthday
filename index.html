@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shelly Birthday</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+/* =========================
+   RESET & BASE STYLES
+========================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #ffb6c1, #FA6161); /* nice birthday gradient */
+  color: #fff;
+}
+
+.slant-text {
+  font-style: italic;
+}
+
+/* =========================
+   LOCK SCREEN
+========================= */
+.hidden { display: none; }
+
+.lock {
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(14px);
+  padding: 50px 25px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(255,0,0,0.7);
+  max-width: 350px;
+  width: 90%;
+}
+
+.lock h2 {
+  font-style: italic;
+  font-size: 1.8em;
+  margin-bottom: 25px;
+  color: #fff;
+}
+
+.lock input {
+  width: 60px;
+  padding: 8px;
+  margin: 4px;
+  font-size: 15px;
+  border-radius: 5px;
+  border: none;
+  text-align: center;
+}
+
+.lock button {
+  margin-top: 30px;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 25px;
+  background: #FF5757;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.lock button:hover {
+  background: #ff1a1a;
+}
+
+.error {
+  margin-top: 15px;
+  color: #ffd6d6;
+  font-size: 0.75em;
+}
+
+/* =========================
+   SLIDES & CARDS
+========================= */
+.container {
+  width: 100%;
+  max-width: 1000px;
+  padding: 20px;
+}
+
+.slide {
+  display: none;
+  animation: fadeSlide 0.6s ease;
+}
+
+.slide.active {
+  display: block;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  background: rgba(255,255,255,0.1);
+  padding: 28px;
+  border-radius: 22px;
+  box-shadow: 0 0 40px rgba(255,0,0,0.5);
+  text-align: center;
+  animation: pulse 3s ease-in-out infinite;
+  color: #ffe0e0;
+  text-shadow: 0 0 10px #ff4d4d;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.name {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #ffd6d6;
+}
+
+.date {
+  color: #ffcccc;
+  margin-top: 10px;
+  font-size: 0.95em;
+}
+
+/* =========================
+   GALLERY
+========================= */
+.gallery {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 5px;
+  scroll-behavior: smooth;
+}
+
+.gallery img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.gallery img:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px #ff99aa;
+}
+
+/* =========================
+   LIGHTBOX
+========================= */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 15px;
+}
+
+.lightbox img {
+  max-width: 95%;
+  max-height: 95%;
+  border-radius: 15px;
+  animation: zoomIn 0.5s ease;
+}
+
+.lightbox span {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  font-size: 35px;
+  cursor: pointer;
+  color: #fff;
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* =========================
+   NAVIGATION
+========================= */
+.nav {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.nav button {
+  padding: 10px 25px;
+  margin: 0 10px;
+  border-radius: 25px;
+  border: none;
+  background: #ff4d4d;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.nav button:hover {
+  background: #ff1a1a;
+}
+
+/* =========================
+   FLOATING ROSES & SPARKLES
+========================= */
+.rose,
+.sparkle {
+  position: fixed;
+  bottom: -50px;
+  pointer-events: none;
+  font-size: 20px;
+  animation: floatUp linear infinite;
+}
+
+.rose {
+  color: #ff1a75;
+}
+
+.sparkle {
+  color: #fff;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-110vh) scale(1.3);
+    opacity: 0;
+  }
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media (max-width: 600px) {
+  .gallery {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    max-height: 400px;
+  }
+
+  .gallery img {
+    height: 100px;
+  }
+
+  .lock input {
+    width: 60px;
+    padding: 8px;
+    margin: 4px;
+  }
+
+  .nav button {
+    padding: 8px 18px;
+    margin: 0 5px;
+    font-size: 0.9em;
+  }
+
+  .card {
+    padding: 20px;
+  }
+}
+
+/* =========================
+   PEONY FIREWORKS
+========================= */
+.peony-spark {
+  position: absolute;
+  width: 4px;   /* small particle size */
+  height: 4px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  animation: peonyExplode 1.5s ease-out forwards;
+  box-shadow: 0 0 4px #fff, 0 0 8px #fff;
+}
+
+@keyframes peonyExplode {
+  0% {
+    transform: scale(0.5) translate(0, 0);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(1.2) translate(var(--x), var(--y));
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0) translate(var(--x), var(--y));
+    opacity: 0;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div class="lock" id="lockScreen">
+  <h2>YOUR BIRTHDATE</h2>
+  <input id="mm" placeholder="MM" maxlength="2">
+  <input id="dd" placeholder="DD" maxlength="2">
+  <input id="yy" placeholder="YYYY" maxlength="4">
+  <br>
+  <button onclick="unlock()">Unlock</button>
+  <div class="error" id="error"></div>
+</div>
+
+<!-- CONTENT -->
+<div class="container hidden" id="content">
+  <audio id="music" src="music.mp3" loop></audio>
+
+<!-- SLIDE 1 -->
+<div class="slide active">
+  <div class="card slant-text">
+    <h1>Happy Birthday</h1>
+    <h2>My Prettiest Girl</h2>
+    <div class="name">Shelly Lyn J. Decrepito</div>
+    <div class="date">— January 26, 2006 —</div>
+
+    <!-- Centered picture -->
+    <img src="cake.png" alt="Birthday Girl" style="display: block; margin: 20px auto; max-width: 100%; height: auto;">
+  </div>
+</div>
+
+<!-- SLIDE 2 -->
+<div class="slide">
+  <div class="card slant-text">
+    <h2 style="text-align: center;">Message</h2>
+    <p style="text-align: justify; text-justify: inter-word;">
+      Happy Birthday, myloveeee!
+
+      Today is all about you, and I hope this day brings you all the happiness you truly deserve. I want to take this moment to tell you how much you mean to me and how grateful I am to have you in my life.
+
+      I know we’ve had our problems sometimes. We fight, and there are moments of silent treatment between us (tampo) or times we misunderstand each other, but even in those moments, I never stop caring for you. I understand that we’re not perfect, but I believe every challenge only makes us stronger.
+
+      I still remember going to Gensan just to spend time with you and take you out on a little date. I remember how you had to hide some things because of your strict parents, sneaking around like little secrets only we knew. Those memories always make me smile—and sometimes make me a little crazy thinking about how cute and sneaky we were.
+
+      I know that sometimes you feel upset when I spend money on food and treats for you, but I do it because I love seeing you happy. Your smile, your laughter, and even just enjoying a meal with you mean so much to me. Making you feel cared for is one of the happiest things I can do.
+
+      Myloveeee, I want you to know that I’m always here for you. If you need anything—whether it’s about school, life, or even just someone to talk to—I’ll always be ready to support you. You don’t have to face things alone because I’m right here, willing to stand with you through everything.
+
+      On your special day, I just want to remind you how much you mean to me. I love you for who you are, and I’m grateful for every laugh, every hug, and every memory we’ve shared. I hope this year brings you happiness, love, and everything your heart desires.
+
+      Iloveeeyouuuusoomuchh, and I promise to keep loving you, supporting you, and making you smile.
+
+      Happy Birthday again, myloveeee!
+
+      — Prince 💖
+    </p>
+  </div>
+</div>
+
+  <!-- SLIDE 3 (Gallery) -->
+  <div class="slide">
+    <div class="card slant-text">
+      <h2>Our Memories</h2>
+      <div class="gallery" id="gallery"></div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav">
+    <button id="prevBtn" onclick="prevSlide()">⭠ Previous</button>
+    <button id="nextBtn" onclick="nextSlide()">Next ⭢</button>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <span onclick="closeLightbox()">✖</span>
+  <img id="lightboxImg">
+</div>
+
+<script>
+/* =========================
+   PEONY FIREWORKS
+========================= */
+function spawnPeonyFirework(side) {
+  const card = document.querySelector(".slide.active .card");
+  if (!card) return;
+
+  const cardRect = card.getBoundingClientRect();
+  const cardHeight = cardRect.height;
+
+  // Base color
+  const hue = Math.floor(Math.random() * 360);
+
+  // Base position of firework
+  const baseX = side === "left"
+    ? 10 + Math.random() * 15
+    : 75 + Math.random() * 15;
+  const baseY = cardHeight * (0.5 + Math.random() * 0.3); // 50%-80% vertical
+
+  // Number of particles (spam effect)
+  const numParticles = 25 + Math.floor(Math.random() * 20); // 25-45 particles
+
+  for (let i = 0; i < numParticles; i++) {
+    const spark = document.createElement("div");
+    spark.className = "peony-spark";
+
+    // Color variation
+    const sparkHue = hue + Math.floor(Math.random() * 40 - 20);
+    spark.style.background = `hsl(${sparkHue}, 100%, 80%)`;
+    spark.style.boxShadow = `0 0 4px hsl(${sparkHue},100%,80%), 0 0 8px hsl(${sparkHue},100%,70%)`;
+
+    // Random angle and distance for spherical explosion
+    const angle = Math.random() * 2 * Math.PI; // 0-360°
+    const distance = 50 + Math.random() * 50; // 50-100px from center
+
+    const x = Math.cos(angle) * distance;
+    const y = Math.sin(angle) * distance;
+
+    spark.style.left = `${baseX}%`;
+    spark.style.bottom = `${baseY}px`;
+    spark.style.setProperty('--x', `${x}px`);
+    spark.style.setProperty('--y', `${y}px`);
+
+    card.appendChild(spark);
+    setTimeout(() => spark.remove(), 1500);
+  }
+}
+
+// Continuous peony fireworks
+setInterval(() => {
+  if (currentSlide === 0) {
+    spawnPeonyFirework("left");
+    spawnPeonyFirework("right");
+  }
+}, 800);
+
+/* =========================
+   SLIDES & NAVIGATION
+========================= */
+let currentSlide = 0;
+const slides = document.querySelectorAll(".slide");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+function showSlide(n) {
+  slides.forEach(s => s.classList.remove("active"));
+  slides[n].classList.add("active");
+  updateNav();
+}
+
+function updateNav() {
+  prevBtn.style.display = (currentSlide === 0) ? "none" : "inline-block";
+  nextBtn.style.display = (currentSlide === slides.length-1) ? "none" : "inline-block";
+}
+
+function nextSlide() {
+  if(currentSlide < slides.length-1) currentSlide++;
+  showSlide(currentSlide);
+}
+
+function prevSlide() {
+  if(currentSlide > 0) currentSlide--;
+  showSlide(currentSlide);
+}
+
+/* =========================
+   LOCK SCREEN
+========================= */
+function unlock() {
+  const mm = document.getElementById("mm").value;
+  const dd = document.getElementById("dd").value;
+  const yy = document.getElementById("yy").value;
+  const error = document.getElementById("error");
+
+  if (mm === "01" && dd === "26" && yy === "2006") {
+    document.getElementById("lockScreen").style.display = "none";
+    const content = document.getElementById("content");
+    content.classList.remove("hidden");
+    document.getElementById("music").play();
+    loadGallery();
+    showSlide(currentSlide);
+  } else { error.textContent = "WRONG BIRTHDATE"; }
+}
+
+/* =========================
+   GALLERY & LIGHTBOX
+========================= */
+function loadGallery() {
+  const gallery = document.getElementById("gallery");
+  gallery.innerHTML = "";
+  for (let i = 1; i <= 96; i++) {
+    const img = document.createElement("img");
+    img.src = `photos/${i}.jpg`;
+    img.onclick = () => openLightbox(img.src);
+    gallery.appendChild(img);
+  }
+}
+
+function openLightbox(src) {
+  const lightbox = document.getElementById("lightbox");
+  document.getElementById("lightboxImg").src = src;
+  lightbox.style.display = "flex";
+}
+
+function closeLightbox() { document.getElementById("lightbox").style.display = "none"; }
+
+/* =========================
+   FLOATING ROSES & SPARKLES
+========================= */
+setInterval(() => {
+  ["rose","sparkle"].forEach(type=>{
+    const el = document.createElement("div");
+    el.className = type;
+    el.innerHTML = type==="rose"?"🌹":"✨";
+    el.style.left = Math.random()*100 + "vw";
+    el.style.fontSize = (type==="rose"?20:8 + Math.random()*12) + "px";
+    el.style.animationDuration = (type==="rose"?5+Math.random()*5:4+Math.random()*4) + "s";
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),10000);
+  });
+}, 300);
+
+/* =========================
+   SWIPE SUPPORT
+========================= */
+let touchStartX = 0, touchEndX = 0;
+document.getElementById("content").addEventListener("touchstart", e => touchStartX = e.changedTouches[0].screenX);
+document.getElementById("content").addEventListener("touchend", e => {
+  touchEndX = e.changedTouches[0].screenX;
+  if (touchEndX < touchStartX - 50) nextSlide();
+  if (touchEndX > touchStartX + 50) prevSlide();
+});
+</script>
+</body>
+</html>
